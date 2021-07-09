@@ -1,0 +1,106 @@
+<html>
+<head>
+    <title>Chat Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../tools.js"></script>  
+</head>
+<body>
+    <div>
+        <table>
+            
+        <tbody id="myTable">
+            {{#each results1}}
+            <tr>
+                <td>User {{ from_user }}:</td>
+                <td>{{ msg }}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    </div>
+    <div>
+        <form id="enter">
+        <label>Message</label><br>
+        <textarea name="msg" id="msg" rows="4" cols="50" required></textarea><br>
+        <button id="entr" type="submit">send</button><br>
+        </form>
+    </div>
+    <script>
+        $(function(){
+            $("#enter").submit(function(event){
+                event.preventDefault();
+                var from_user = {{from1}}
+                var to_user = {{to1}}
+                var msg = $("#msg").val();
+
+                if(msg != '')
+                {
+                var z = parseInt(from_user);
+                var z2 = msg;
+                var z1 = parseInt(to_user);
+                $.ajax({
+                    url: '/save',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    processData: false,
+                    data: JSON.stringify({ "from_user" : z, "to_user": z1, "msg": msg}),
+                    success: function(res){
+                            console.log("saved succesfully");
+                            $("#enter")[0].reset();
+                            //console.log("See");
+                            console.log(res.response);
+                            var ii=0;
+                            $("#myTable").html(" ");
+                            for(ii=0;ii<res.response.length;ii++)
+                            {
+                                $("#myTable").append($('<tr> <td>' +'User ' + to_user + ':' +'</td> <td>' + res.response[ii].msg + '</td> </tr>'));
+                            }
+                            },
+                        error: function(data){
+                            console.log(data);
+                        }
+                    });
+                    }else{
+                        console.log("blank");
+                    }
+                });
+            });
+            function ds(){
+                var from_user = {{from1}};
+                var to_user = {{to1}};
+                var z = parseInt(from_user);
+                var z1 = parseInt(to_user);
+                $.ajax({
+                    url: '/ds',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    processData: false,
+                    data: JSON.stringify({ "from_user" : z, "to_user": z1}),
+                    success: function(res){
+                            console.log("saved succesfully");
+                            //console.log("See");
+                            console.log(res.response);
+                            var ii=0;
+                            $("#myTable").html(" ");
+                            for(ii=0;ii<res.response.length;ii++)
+                            {
+                                $("#myTable").append($('<tr> <td>' +'User ' + to_user + ':' +'</td> <td>' + res.response[ii].msg + '</td> </tr>'));
+                            }
+                            },
+                        error: function(data){
+                            console.log(data);
+                        }
+                    });
+            }
+            setInterval(function()
+            {
+                ds()
+            }, 1000);
+            var x = tools.add(4,2) ;
+            console.log(x);
+    </script>
+    <p id="123"></p>
+</body>
+</html>
